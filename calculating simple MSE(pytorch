@@ -1,0 +1,444 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "Untitled5.ipynb",
+      "provenance": [],
+      "authorship_tag": "ABX9TyMk0SNJtk5kpX0/cHgWqiJL",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/ericoh929/boiled-duck/blob/main/calculating%20simple%20MSE(pytorch\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "XnqW6hFdmJsf"
+      },
+      "source": [
+        "import torch\n",
+        "import numpy as np"
+      ],
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "HeA331EQmL_-",
+        "outputId": "cfe0746e-a950-4353-a099-352baf9d77a1"
+      },
+      "source": [
+        "print(torch.__version__)"
+      ],
+      "execution_count": 2,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "1.8.1+cu101\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "zV2fMhV9mNzn"
+      },
+      "source": [
+        "w = 1.0\n",
+        "\n",
+        "def forward(x):\n",
+        "    return x*w"
+      ],
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "DPP44NdeqCtd"
+      },
+      "source": [
+        "#loss function\n",
+        "\n",
+        "def loss(x, y):\n",
+        "    pred = forward(x)\n",
+        "    return (pred - y)**2"
+      ],
+      "execution_count": 11,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "8ybu2RS8sivP"
+      },
+      "source": [
+        "x_data = [1, 2, 3]\n",
+        "y_data = [3, 6, 9]"
+      ],
+      "execution_count": 12,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "x-bfmNYBqcbq",
+        "outputId": "dfe4efac-331c-4a3d-bef5-2732df5b81d2"
+      },
+      "source": [
+        "w_list = []\n",
+        "mse_list = []\n",
+        "\n",
+        "for w in np.arange(0.0, 4.1, 0.1):\n",
+        "    print(\"w = \", w)\n",
+        "    l_sum = 0\n",
+        "    for x_val, y_val in zip(x_data, y_data):\n",
+        "        pred = forward(x_val)\n",
+        "        l = loss(x_val, y_val)\n",
+        "        l_sum += l\n",
+        "        print(\"\\t x_val: {:.3f}, y_val: {:.3f}, pred: {:.3f}, loss: {:.3f}\".format(x_val, y_val, pred, l))\n",
+        "    print(\"MSE: {:.3f}\\n\".format(l_sum / 3))\n",
+        "    w_list.append(w)\n",
+        "    mse_list.append(l_sum/3)"
+      ],
+      "execution_count": 19,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "w =  0.0\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 0.000, loss: 9.000\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 0.000, loss: 36.000\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 0.000, loss: 81.000\n",
+            "MSE: 42.000\n",
+            "\n",
+            "w =  0.1\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 0.100, loss: 8.410\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 0.200, loss: 33.640\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 0.300, loss: 75.690\n",
+            "MSE: 39.247\n",
+            "\n",
+            "w =  0.2\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 0.200, loss: 7.840\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 0.400, loss: 31.360\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 0.600, loss: 70.560\n",
+            "MSE: 36.587\n",
+            "\n",
+            "w =  0.30000000000000004\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 0.300, loss: 7.290\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 0.600, loss: 29.160\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 0.900, loss: 65.610\n",
+            "MSE: 34.020\n",
+            "\n",
+            "w =  0.4\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 0.400, loss: 6.760\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 0.800, loss: 27.040\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 1.200, loss: 60.840\n",
+            "MSE: 31.547\n",
+            "\n",
+            "w =  0.5\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 0.500, loss: 6.250\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 1.000, loss: 25.000\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 1.500, loss: 56.250\n",
+            "MSE: 29.167\n",
+            "\n",
+            "w =  0.6000000000000001\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 0.600, loss: 5.760\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 1.200, loss: 23.040\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 1.800, loss: 51.840\n",
+            "MSE: 26.880\n",
+            "\n",
+            "w =  0.7000000000000001\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 0.700, loss: 5.290\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 1.400, loss: 21.160\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 2.100, loss: 47.610\n",
+            "MSE: 24.687\n",
+            "\n",
+            "w =  0.8\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 0.800, loss: 4.840\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 1.600, loss: 19.360\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 2.400, loss: 43.560\n",
+            "MSE: 22.587\n",
+            "\n",
+            "w =  0.9\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 0.900, loss: 4.410\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 1.800, loss: 17.640\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 2.700, loss: 39.690\n",
+            "MSE: 20.580\n",
+            "\n",
+            "w =  1.0\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 1.000, loss: 4.000\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 2.000, loss: 16.000\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 3.000, loss: 36.000\n",
+            "MSE: 18.667\n",
+            "\n",
+            "w =  1.1\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 1.100, loss: 3.610\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 2.200, loss: 14.440\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 3.300, loss: 32.490\n",
+            "MSE: 16.847\n",
+            "\n",
+            "w =  1.2000000000000002\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 1.200, loss: 3.240\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 2.400, loss: 12.960\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 3.600, loss: 29.160\n",
+            "MSE: 15.120\n",
+            "\n",
+            "w =  1.3\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 1.300, loss: 2.890\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 2.600, loss: 11.560\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 3.900, loss: 26.010\n",
+            "MSE: 13.487\n",
+            "\n",
+            "w =  1.4000000000000001\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 1.400, loss: 2.560\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 2.800, loss: 10.240\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 4.200, loss: 23.040\n",
+            "MSE: 11.947\n",
+            "\n",
+            "w =  1.5\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 1.500, loss: 2.250\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 3.000, loss: 9.000\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 4.500, loss: 20.250\n",
+            "MSE: 10.500\n",
+            "\n",
+            "w =  1.6\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 1.600, loss: 1.960\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 3.200, loss: 7.840\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 4.800, loss: 17.640\n",
+            "MSE: 9.147\n",
+            "\n",
+            "w =  1.7000000000000002\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 1.700, loss: 1.690\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 3.400, loss: 6.760\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 5.100, loss: 15.210\n",
+            "MSE: 7.887\n",
+            "\n",
+            "w =  1.8\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 1.800, loss: 1.440\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 3.600, loss: 5.760\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 5.400, loss: 12.960\n",
+            "MSE: 6.720\n",
+            "\n",
+            "w =  1.9000000000000001\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 1.900, loss: 1.210\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 3.800, loss: 4.840\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 5.700, loss: 10.890\n",
+            "MSE: 5.647\n",
+            "\n",
+            "w =  2.0\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 2.000, loss: 1.000\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 4.000, loss: 4.000\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 6.000, loss: 9.000\n",
+            "MSE: 4.667\n",
+            "\n",
+            "w =  2.1\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 2.100, loss: 0.810\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 4.200, loss: 3.240\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 6.300, loss: 7.290\n",
+            "MSE: 3.780\n",
+            "\n",
+            "w =  2.2\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 2.200, loss: 0.640\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 4.400, loss: 2.560\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 6.600, loss: 5.760\n",
+            "MSE: 2.987\n",
+            "\n",
+            "w =  2.3000000000000003\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 2.300, loss: 0.490\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 4.600, loss: 1.960\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 6.900, loss: 4.410\n",
+            "MSE: 2.287\n",
+            "\n",
+            "w =  2.4000000000000004\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 2.400, loss: 0.360\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 4.800, loss: 1.440\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 7.200, loss: 3.240\n",
+            "MSE: 1.680\n",
+            "\n",
+            "w =  2.5\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 2.500, loss: 0.250\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 5.000, loss: 1.000\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 7.500, loss: 2.250\n",
+            "MSE: 1.167\n",
+            "\n",
+            "w =  2.6\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 2.600, loss: 0.160\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 5.200, loss: 0.640\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 7.800, loss: 1.440\n",
+            "MSE: 0.747\n",
+            "\n",
+            "w =  2.7\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 2.700, loss: 0.090\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 5.400, loss: 0.360\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 8.100, loss: 0.810\n",
+            "MSE: 0.420\n",
+            "\n",
+            "w =  2.8000000000000003\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 2.800, loss: 0.040\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 5.600, loss: 0.160\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 8.400, loss: 0.360\n",
+            "MSE: 0.187\n",
+            "\n",
+            "w =  2.9000000000000004\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 2.900, loss: 0.010\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 5.800, loss: 0.040\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 8.700, loss: 0.090\n",
+            "MSE: 0.047\n",
+            "\n",
+            "w =  3.0\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 3.000, loss: 0.000\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 6.000, loss: 0.000\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 9.000, loss: 0.000\n",
+            "MSE: 0.000\n",
+            "\n",
+            "w =  3.1\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 3.100, loss: 0.010\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 6.200, loss: 0.040\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 9.300, loss: 0.090\n",
+            "MSE: 0.047\n",
+            "\n",
+            "w =  3.2\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 3.200, loss: 0.040\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 6.400, loss: 0.160\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 9.600, loss: 0.360\n",
+            "MSE: 0.187\n",
+            "\n",
+            "w =  3.3000000000000003\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 3.300, loss: 0.090\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 6.600, loss: 0.360\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 9.900, loss: 0.810\n",
+            "MSE: 0.420\n",
+            "\n",
+            "w =  3.4000000000000004\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 3.400, loss: 0.160\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 6.800, loss: 0.640\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 10.200, loss: 1.440\n",
+            "MSE: 0.747\n",
+            "\n",
+            "w =  3.5\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 3.500, loss: 0.250\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 7.000, loss: 1.000\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 10.500, loss: 2.250\n",
+            "MSE: 1.167\n",
+            "\n",
+            "w =  3.6\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 3.600, loss: 0.360\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 7.200, loss: 1.440\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 10.800, loss: 3.240\n",
+            "MSE: 1.680\n",
+            "\n",
+            "w =  3.7\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 3.700, loss: 0.490\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 7.400, loss: 1.960\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 11.100, loss: 4.410\n",
+            "MSE: 2.287\n",
+            "\n",
+            "w =  3.8000000000000003\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 3.800, loss: 0.640\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 7.600, loss: 2.560\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 11.400, loss: 5.760\n",
+            "MSE: 2.987\n",
+            "\n",
+            "w =  3.9000000000000004\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 3.900, loss: 0.810\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 7.800, loss: 3.240\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 11.700, loss: 7.290\n",
+            "MSE: 3.780\n",
+            "\n",
+            "w =  4.0\n",
+            "\t x_val: 1.000, y_val: 3.000, pred: 4.000, loss: 1.000\n",
+            "\t x_val: 2.000, y_val: 6.000, pred: 8.000, loss: 4.000\n",
+            "\t x_val: 3.000, y_val: 9.000, pred: 12.000, loss: 9.000\n",
+            "MSE: 4.667\n",
+            "\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "rDGaIq1hsWx_"
+      },
+      "source": [
+        "import matplotlib.pyplot as plt"
+      ],
+      "execution_count": 20,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 295
+        },
+        "id": "M-GeJDdluse4",
+        "outputId": "4dfa006f-b605-42a7-e3a1-0eac9c6c26f6"
+      },
+      "source": [
+        "plt.plot(w_list, mse_list, 'g^')\n",
+        "plt.title('Loss function')\n",
+        "plt.xlabel(\"weight\")\n",
+        "plt.ylabel(\"loss\")\n",
+        "plt.show()"
+      ],
+      "execution_count": 35,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "image/png": "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\n",
+            "text/plain": [
+              "<Figure size 432x288 with 1 Axes>"
+            ]
+          },
+          "metadata": {
+            "tags": [],
+            "needs_background": "light"
+          }
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "8H9Zr3ciuzZX"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
